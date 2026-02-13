@@ -1,0 +1,79 @@
+---
+import { getT } from "@/i18n";
+import themeConfig from "@/theme.config";
+import { generateRandomBrightColor } from "@/toolkit/tools/generateRandomBrightColor";
+import { covers } from "../Images.astro";
+import { sample } from "es-toolkit";
+
+interface NavPost {
+  title: string;
+  slug: string;
+  category?: string;
+  cover?: string;
+}
+
+interface Props {
+  prevPost?: NavPost;
+  nextPost?: NavPost;
+  enableGradientCover?: boolean;
+}
+
+const { prevPost, nextPost, enableGradientCover = false } = Astro.props;
+const t = getT((themeConfig.locale as "zh-CN" | "en") || "zh-CN");
+---
+
+<div class="post-nav">
+  <div class="item left">
+    {
+      prevPost && (
+        <a
+          href={`/posts/${prevPost.slug}/`}
+          itemprop="url"
+          rel="prev"
+          title={prevPost.title}
+          style={
+            enableGradientCover
+              ? `background-image: linear-gradient(to bottom right, ${generateRandomBrightColor()}, ${generateRandomBrightColor()});`
+              : `background-image: url(${prevPost.cover || sample(covers ?? []).src});`
+          }
+        >
+          <span class="type">{t("post.previousPost")}</span>
+          {prevPost.category && (
+            <span class="category">
+              <i class="ic i-ri-flag-line" />
+              {prevPost.category}
+            </span>
+          )}
+          <h3>{prevPost.title}</h3>
+        </a>
+      )
+    }
+  </div>
+
+  <div class="item right">
+    {
+      nextPost && (
+        <a
+          href={`/posts/${nextPost.slug}/`}
+          itemprop="url"
+          rel="next"
+          title={nextPost.title}
+          style={
+            enableGradientCover
+              ? `background-image: linear-gradient(to bottom right, ${generateRandomBrightColor()}, ${generateRandomBrightColor()});`
+              : `background-image: url(${nextPost.cover || sample(covers ?? []).src});`
+          }
+        >
+          <span class="type">{t("post.nextPost")}</span>
+          {nextPost.category && (
+            <span class="category">
+              <i class="ic i-ri-flag-line" />
+              {nextPost.category}
+            </span>
+          )}
+          <h3>{nextPost.title}</h3>
+        </a>
+      )
+    }
+  </div>
+</div>

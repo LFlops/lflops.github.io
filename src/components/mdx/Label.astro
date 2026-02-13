@@ -1,0 +1,24 @@
+---
+interface Props {
+  type?: "primary" | "info" | "success" | "warning" | "danger" | "default";
+}
+
+const { type = "primary" }: Props = Astro.props;
+---
+
+<span class={`label ${type}`.trim()}>
+  <slot />
+</span>
+
+<style is:global>
+  span.label {
+    display: inline;
+    border-radius: 0.3rem;
+    border: 0.0625rem solid;
+    padding: 0.2rem 0.3rem;
+
+    background: var(--note-bg, var(--grey-2));
+    border-color: var(--note-border, var(--grey-4));
+    color: var(--note-text, var(--grey-6));
+  }
+</style>

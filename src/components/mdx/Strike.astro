@@ -1,0 +1,22 @@
+---
+interface Props {
+  type?: "primary" | "info" | "success" | "warning" | "danger" | "default";
+}
+
+const { type = "primary" }: Props = Astro.props;
+---
+
+<s class={`strike ${type}`.trim()}>
+  <slot />
+</s>
+
+<style is:global>
+  .md s.strike {
+    color: var(--note-text, var(--grey-5));
+    text-decoration-color: var(--note-text, var(--grey-5));
+  }
+
+  .md s.strike.default {
+    --note-text: var(--grey-5);
+  }
+</style>

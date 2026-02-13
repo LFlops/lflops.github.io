@@ -1,0 +1,98 @@
+---
+import type { ImageMetadata } from 'astro'
+import CoverImage from './CoverImage.astro'
+
+interface Props {
+  enableCover?: boolean
+  enablePreload?: boolean
+  fixedCover?: ImageMetadata | string
+  gradient?: boolean
+  covers?: ImageMetadata[]
+  title?: string
+}
+
+const {
+  enableCover = false,
+  fixedCover,
+  gradient = false,
+  covers = [],
+  title = '',
+} = Astro.props as Props
+
+// 是否显示多图轮播
+const isMultipleImages =
+  !fixedCover && !gradient && covers.length === 6
+
+// 单图模式图片来源
+const singleImage =
+  fixedCover || (gradient ? 'https://7ed.net/bing/api' : covers[0])
+---
+{enableCover && (
+    <div class="spacer"></div>
+
+    <div
+      id="imgs"
+      class="imgs-container"
+    >
+      {isMultipleImages ? (
+        <!-- 多图轮播模式 -->
+        <ul class="image-list">
+          {covers.map((cover, index) => (
+            <CoverImage
+              src={cover}
+              alt={title}
+              index={index}
+              isListItem={true}
+            />
+          ))}
+        </ul>
+      ) : (
+        <!-- 单图模式 -->
+        <CoverImage
+          src={singleImage}
+          alt={title}
+          index={0}
+          isListItem={false}
+        />
+      )}
+
+      <div class="imgs-overlay"></div>
+    </div>
+  </>
+)}
+
+<style>
+  .spacer {
+    height: 40vh;
+  }
+
+  .imgs-container {
+    background-color: #363636;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: -9;
+    height: 70vh;
+    min-height: 25rem;
+    content-visibility: auto;
+    contain-intrinsic-size: 100vw 70vh;
+  }
+
+  .image-list {
+    height: 100%;
+    width: 100%;
+    position: relative;
+  }
+
+  .imgs-overlay {
+    background-color: rgba(0, 0, 0, 0.2);
+    height: 100%;
+    width: 100%;
+    transition: opacity 0.3s;
+    left: 0;
+    top: 0;
+    position: absolute;
+    z-index: 1;
+  }
+</style>

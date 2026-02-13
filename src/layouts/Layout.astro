@@ -1,0 +1,205 @@
+---
+import NavBar from "@/components/navbar/NavBar.svelte";
+import Brand from "@/components/Brand.astro";
+import SidebarWrapper from "@/components/sidebar/SidebarWrapper.astro";
+import HeaderCover from "@/components/HeaderCover.astro";
+import Waves from "@/components/Waves.svelte";
+import Footer from "@/components/footer/Footer.astro";
+import Widgets from "@/components/footer/Widgets.svelte";
+import { getCollection } from "astro:content";
+import type {
+  TocItem,
+  RelatedPost,
+  QuickNavigation,
+} from "@/components/sidebar/SidebarTypes";
+import "@/styles/view-transition.css";
+import "@vtbag/element-crossing?url";
+
+import themeConfig from "@/theme.config.ts";
+
+import "@/styles/palette.css";
+import "@/styles/style.css";
+import "@/styles/header-cover.css";
+import "@/styles/spoiler.css";
+import "@/components/footer/footer.css";
+
+import Loading from "@/components/Loading.astro";
+import { covers, resolveFixedCover } from "@/components/Images.astro";
+import FloatingToolbar from "@/components/FloatingToolbar.svelte";
+
+// Accept sidebar props from child pages
+interface PostMeta {
+  date: Date;
+  wordCount: number;
+  readTime: number;
+}
+
+interface Props {
+  toc?: TocItem[];
+  relatedPosts?: RelatedPost[];
+  currentSlug?: string;
+  navigation?: QuickNavigation;
+  pageTitle?: string;
+  postMeta?: PostMeta;
+  indexPage?: boolean;
+}
+
+const {
+  toc = [],
+  relatedPosts = [],
+  currentSlug = "",
+  navigation = {},
+  pageTitle = "",
+  postMeta,
+  indexPage = false,
+} = Astro.props;
+
+const navLinks = themeConfig.nav;
+const siteName = themeConfig.siteName;
+const sidebarConfig = themeConfig.sidebar || {};
+const brandConfig = themeConfig.brand || {};
+const coverConfig = themeConfig.cover || {};
+const footerConfig = themeConfig.footer || {};
+const widgetsConfig = themeConfig.widgets || {};
+
+// fixedCover：通过 Images.astro 统一解析（静态导入走 <Image />，字符串走 <img> 兜底）
+// 兼容旧配置：如果用户只配置了 fixedCover 但未配置 enableFixedCover，则默认视为启用。
+const fixedCoverEnabled =
+  coverConfig.enableFixedCover ?? Boolean(coverConfig.fixedCover);
+const fixedCover = fixedCoverEnabled
+  ? resolveFixedCover(coverConfig.fixedCover)
+  : undefined;
+
+// Get all posts for widgets
+const allPosts = await getCollection("posts");
+const posts = allPosts.filter((post) => !post.data.draft);
+
+const siteState = {
+  categories: allPosts.reduce((acc, post) => {
+    post.data.categories?.forEach((category) => acc.add(category));
+    return acc;
+  }, new Set()).size,
+  posts: posts.length,
+  tags: allPosts.reduce((acc, post) => {
+    post.data.tags?.forEach((tag) => acc.add(tag));
+    return acc;
+  }, new Set()).size,
+};
+
+// Import CodeBlock to define custom element
+import CodeBlock from "@/components/CodeBlock.svelte";
+import SearchPage from "@/components/search/SearchPage.svelte";
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <slot name="head" />
+
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <NavBar
+      client:load
+      name={siteName}
+      navLinks={navLinks}
+      clickToggleCallback={() => void 0}
+    />
+    <SearchPage client:idle selector="#search" />
+    <Loading />
+    <div id="container">
+      <HeaderCover
+        enableCover={coverConfig.enableCover}
+        enablePreload={coverConfig.enablePreload}
+        fixedCover={fixedCover}
+        gradient={coverConfig.gradient}
+        covers={covers}
+        title={brandConfig.title}
+      />
+      <Brand
+        title={brandConfig.title}
+        subtitle={brandConfig.subtitle}
+        logo={brandConfig.logo}
+        pageTitle={indexPage ? "" : pageTitle}
+        postMeta={postMeta}
+      />
+      <Waves client:load />
+      <main>
+        <div class="inner">
+          <div id="main" class="pjax">
+            <slot />
+            <footer id="footer">
+              <div class="inner">
+                <div class="widgets">
+                  <Widgets
+                    client:visible
+                    posts={posts}
+                    enableRandomPosts={widgetsConfig.randomPosts !== false}
+                    enableRecentComments={widgetsConfig.recentComments !==
+                      false}
+                  />
+                </div>
+                <Footer
+                  config={footerConfig}
+                  siteName={siteName}
+                  author={sidebarConfig.author}
+                />
+              </div>
+            </footer>
+          </div>
+          <div id="sidebar" class="mt-12 mr-12">
+            <SidebarWrapper
+              config={sidebarConfig}
+              navLinks={navLinks}
+              toc={toc}
+              relatedPosts={relatedPosts}
+              currentSlug={currentSlug}
+              navigation={navigation}
+              siteState={siteState}
+            />
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      import { css } from "@/assets/fonts/LXGWWenKai-Regular.ttf?subsets";
+
+      document.addEventListener("pagereveal", () => {
+        document.body.style.fontFamily = css.family as string;
+      });
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.style.fontFamily = css.family as string;
+      });
+    </script>
+    <script>
+      import { initializeCodeBlock } from "@/toolkit/initCodeBlock";
+
+      document.addEventListener("pagereveal", () => {
+        initializeCodeBlock(".astro-code");
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initializeCodeBlock(".astro-code");
+      });
+    </script>
+    <div class="hidden">
+      <CodeBlock client:idle />
+    </div>
+    <FloatingToolbar client:idle />
+  </body>
+</html>
+
+<style>
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+</style>

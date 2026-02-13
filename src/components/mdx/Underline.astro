@@ -1,0 +1,36 @@
+---
+interface Props {
+  type?: "primary" | "info" | "success" | "warning" | "danger" | "default";
+  variant?: "default" | "dot" | "wavy";
+}
+
+const { type = "primary", variant = "default" }: Props = Astro.props;
+const variantClass = variant === "default" ? "" : variant;
+---
+
+<ins class={`underline ${type} ${variantClass}`.trim()}>
+  <slot />
+</ins>
+
+<style is:global>
+  .md ins.underline {
+    --line-color: var(--note-text, var(--primary-color));
+    text-decoration: none;
+    border-bottom: 0.125rem solid var(--line-color);
+  }
+
+  .md ins.underline.wavy {
+    text-decoration-style: wavy;
+    text-decoration-line: underline;
+    text-decoration-color: var(--line-color);
+    border-bottom: none;
+  }
+
+  .md ins.underline.dot {
+    border-bottom: 0.2rem dotted var(--line-color);
+  }
+
+  .md ins.underline.default {
+    --note-text: var(--primary-color);
+  }
+</style>

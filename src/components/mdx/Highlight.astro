@@ -1,0 +1,24 @@
+---
+interface Props {
+  type?: "primary" | "info" | "success" | "warning" | "danger" | "default";
+}
+
+const { type = "primary" }: Props = Astro.props;
+---
+
+<mark class={`highlight ${type}`.trim()}>
+  <slot />
+</mark>
+
+<style is:global>
+  .md mark.highlight {
+    background-color: var(--note-bg, #dbfdad);
+    color: inherit;
+    border-radius: 0.2rem;
+    padding: 0 0.2rem;
+  }
+
+  .md mark.highlight.default {
+    --note-bg: #dbfdad;
+  }
+</style>

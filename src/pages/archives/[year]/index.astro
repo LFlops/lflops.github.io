@@ -1,0 +1,159 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { structurePostsByDate } from "@/toolkit/posts/structurePostsByDate";
+import { fmtNum } from "@/toolkit/tools/fmtNum";
+import { t } from "@/i18n";
+import "../../../styles/collapse.css";
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection("posts");
+  const publishedPosts = allPosts
+    .filter((post) => !post.data.draft)
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+  const structuredPosts = structurePostsByDate(publishedPosts, {
+    daily: false,
+  });
+
+  const years = Object.keys(structuredPosts).map(Number);
+
+  return years.map((year) => ({
+    params: { year: String(year) },
+    props: {
+      year,
+      posts: structuredPosts[year][0],
+      allYears: years.sort((a, b) => b - a),
+    },
+  }));
+}
+
+import type { CollectionEntry } from "astro:content";
+
+const { year, posts } = Astro.props as {
+  year: number;
+  posts: CollectionEntry<"posts">[];
+};
+
+// Helper to get category URL
+function getCategoryUrl(category: string): string {
+  return `/categories/${encodeURIComponent(category)}`;
+}
+
+// Helper to format date
+function formatDate(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${month}-${day}`;
+}
+---
+
+<Layout pageTitle={`${year} 年归档`}>
+  <div class="wrap">
+    <div class="timeline">
+      <h2 class="item header">
+        <a href="/archives/">全部</a>
+        <small>/</small>
+        {year} 年
+        <small>归档</small>
+      </h2>
+
+      {
+        (() => {
+          let lastMonth = 0;
+          let monthPostCount = 0;
+
+          return posts.map((post, index) => {
+            const postDate = post.data.date;
+            const month = postDate.getMonth() + 1;
+            const isNewMonth = month !== lastMonth;
+
+            // Count posts in this month
+            if (isNewMonth) {
+              monthPostCount = posts.filter(
+                (p) => p.data.date.getMonth() + 1 === month,
+              ).length;
+              lastMonth = month;
+            }
+
+            const prevPost = index > 0 ? posts[index - 1] : null;
+            const prevMonth = prevPost ? prevPost.data.date.getMonth() + 1 : 0;
+
+            return (
+              <>
+                {(index === 0 || month !== prevMonth) && (
+                  <h3 class="item section">
+                    <a href={`/archives/${year}/${fmtNum(month)}/`}>
+                      {month} 月
+                    </a>
+                    <small>({monthPostCount})</small>
+                  </h3>
+                )}
+
+                <article
+                  class="item normal"
+                  itemscope
+                  itemtype="http://schema.org/Article"
+                >
+                  <div class="meta">
+                    <time
+                      itemprop="dateCreated"
+                      datetime={postDate.toISOString()}
+                    >
+                      {formatDate(postDate)}
+                    </time>
+                  </div>
+
+                  {post.data.categories && post.data.categories.length > 0 && (
+                    <div class="meta">
+                      {post.data.categories.map((cat, catIndex) => (
+                        <>
+                          {catIndex === post.data.categories!.length - 1 && (
+                            <span>
+                              <a href={getCategoryUrl(cat)}>{cat}</a>
+                            </span>
+                          )}
+                        </>
+                      ))}
+                    </div>
+                  )}
+
+                  <div class="title">
+                    {post.data.link ? (
+                      <a
+                        href={post.data.link}
+                        class="external"
+                        itemprop="url"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span itemprop="name">
+                          {post.data.title || post.data.link}
+                        </span>
+                        <i class="i-ri-external-link-line" />
+                      </a>
+                    ) : (
+                      <a href={`/posts/${post.id}/`} itemprop="url">
+                        <span itemprop="name">
+                          {post.data.title || t("post.noContent")}
+                        </span>
+                      </a>
+                    )}
+                  </div>
+                </article>
+              </>
+            );
+          });
+        })()
+      }
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .wrap {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+</style>

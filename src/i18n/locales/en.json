@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "home": "Home",
+    "posts": "Posts",
+    "categories": "Categories",
+    "tags": "Tags",
+    "archives": "Archives"
+  },
+  "post": {
+    "wordCount": "Word Count",
+    "readingTime": "Reading Time",
+    "minutes": "min",
+    "words": "words",
+    "author": "Author",
+    "link": "Link",
+    "copyright": "Copyright",
+    "sticky": "Sticky Posts",
+    "latest": "Latest Posts",
+    "noContent": "No posts available",
+    "publishedAt": "Published on",
+    "createdAt": "Created at",
+    "previousPost": "Previous Post",
+    "nextPost": "Next Post",
+    "license": {
+      "text": "This article is licensed under",
+      "suffix": "license. Please indicate the source for reprints",
+      "noreprint": "All rights reserved. Reprinting is prohibited",
+      "CC-BY-4.0": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+      "CC-BY-SA-4.0": "Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)",
+      "CC-BY-ND-4.0": "Creative Commons Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0)",
+      "CC-BY-NC-4.0": "Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)",
+      "CC-BY-NC-SA-4.0": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+      "CC-BY-NC-ND-4.0": "Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)"
+    }
+  },
+  "category": {
+    "title": "Categories",
+    "subcategories": "subcategories",
+    "posts": "posts",
+    "label": "Category",
+    "noContent": "No posts in this category"
+  },
+  "tag": {
+    "title": "Tags"
+  },
+  "archive": {
+    "title": "Archives",
+    "year": "Year",
+    "month": "Month",
+    "excellent": "Excellent",
+    "great": "Great",
+    "good": "Good",
+    "nice": "Nice",
+    "ok": "OK",
+    "emh": "Hmm..",
+    "keepTrying": "Keep it up"
+  },
+  "sidebar": {
+    "toc": "Table of Contents",
+    "overview": "Site Overview",
+    "author": "Author",
+    "scrollTop": "Back to Top",
+    "scrollBottom": "Go to Bottom",
+    "relatedPosts": "Related Posts",
+    "state": {
+      "posts": "Posts",
+      "categories": "Categories",
+      "tags": "Tags"
+    },
+    "related": {
+      "noContent": "No related posts"
+    },
+    "panels": {
+      "contents": "Contents",
+      "related": "Related",
+      "overview": "Overview"
+    }
+  },
+  "footer": {
+    "poweredBy": "Powered by",
+    "and": "&",
+    "poweredSuffix": "Theme",
+    "randomPosts": "Random Posts"
+  },
+  "pagination": {
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "button": {
+    "readMore": "Read More",
+    "more": "More"
+  },
+  "tags": {
+    "title": "Tags",
+    "allTags": "All Tags",
+    "tagged": "Tagged"
+  },
+  "common": {
+    "loading": "Loading",
+    "more": "More",
+    "total": "Total",
+    "home": "Home",
+    "in": "in"
+  }
+}

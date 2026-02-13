@@ -1,0 +1,122 @@
+---
+interface Props {
+  type?: "primary" | "info" | "success" | "warning" | "danger" | "default";
+  title?: string;
+  icon?: string | "none";
+}
+
+const { type = "primary", title, icon }: Props = Astro.props;
+
+const iconMap: Record<NonNullable<Props["type"]>, string> = {
+  default: "i-ri-file-list-3-fill",
+  primary: "i-ri-lightbulb-flash-fill",
+  info: "i-ri-information-fill",
+  success: "i-ri-checkbox-circle-fill",
+  warning: "i-ri-alert-fill",
+  danger: "i-ri-close-circle-fill",
+};
+
+const resolvedIcon = icon ?? iconMap[type];
+const showIcon = resolvedIcon !== "none";
+---
+
+<div class={`note note-card ${type}`.trim()}>
+  {showIcon ? <i class={`note-icon ${resolvedIcon}`.trim()} /> : null}
+  <div class="note-body">
+    {title ? <div class="note-title">{title}</div> : null}
+    <div class="note-content">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style is:global>
+  .md .note {
+    border-radius: 0.1875rem;
+    margin: 1rem 0;
+    padding: 1rem;
+    position: relative;
+    background: var(--note-bg, var(--grey-2));
+    color: var(--grey-6);
+    border-left: 0.25rem solid var(--note-border, var(--grey-4));
+    font-size: 0.875rem;
+    padding-left: 2.5rem;
+  }
+
+  .md .note.note-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem 1rem 1rem;
+    color: var(--grey-6);
+  }
+
+  .md .note.note-card::before {
+    content: none;
+  }
+
+  .md .note.note-card .note-icon {
+    flex: 0 0 auto;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--note-text, var(--grey-6));
+  }
+
+  .md .note.note-card .note-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .md .note.note-card .note-title {
+    font-weight: 700;
+    color: var(--note-text, var(--grey-6));
+    margin-bottom: 0.25rem;
+  }
+
+  .md .note.note-card .note-content > :last-child {
+    margin-bottom: 0;
+  }
+
+  /* Headings inside note */
+  .md .note h2,
+  .md .note h3,
+  .md .note h4,
+  .md .note h5,
+  .md .note h6 {
+    margin-top: 0.1875rem;
+    border-bottom: initial;
+    margin-bottom: 0;
+    padding-top: 0;
+  }
+
+  /* Paragraphs inside note */
+  .md .note p {
+    line-height: 1.8;
+  }
+
+  /* Links inside note */
+  .md .note a:not(.btn) {
+    color: var(--note-hover);
+    border-bottom: 0.0625rem dashed var(--note-text);
+  }
+
+  .md .note a:not(.btn):hover {
+    color: var(--note-text);
+    border-bottom-color: var(--note-text);
+  }
+
+  /* Lists inside note */
+  .md .note ul li::before {
+    background: var(--note-text);
+  }
+
+  .md .note ol li::before {
+    background: var(--note-text, var(--primary-color)) !important;
+    width: 0.8rem;
+    height: 0.8rem;
+    font-size: 0.45rem;
+    line-height: 0.8rem;
+    top: 0.4rem;
+    left: -1.2rem;
+  }
+</style>

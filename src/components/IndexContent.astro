@@ -1,0 +1,186 @@
+---
+import type { CollectionEntry } from "astro:content";
+import PostSegments from "./postSegments/PostSegments.astro";
+import CategoryCards from "./categoryCard/CategoryCards.svelte";
+import Divider from "./Divider.astro";
+import { countWords } from "@/toolkit/posts/calculateStats";
+import { getPostCover } from "./Images.astro";
+import { t } from "@/i18n";
+
+interface CategoryItem {
+  name: string;
+  url: string;
+  cover?: string;
+  topCategory?: {
+    name: string;
+    url: string;
+  };
+  postCount: number;
+  childCount?: number;
+  posts: Array<{ title: string; url: string }>;
+}
+
+interface Props {
+  posts: CollectionEntry<"posts">[];
+  stickyPosts?: CollectionEntry<"posts">[];
+  categories?: CategoryItem[];
+  isFirstPage?: boolean;
+}
+
+const {
+  posts,
+  stickyPosts = [],
+  categories = [],
+  isFirstPage = true,
+} = Astro.props;
+
+// Helper function to calculate read time (assuming 300 words per minute)
+function calculateReadTime(wordCount: number): number {
+  const wordsPerMinute = 300;
+  return Math.ceil(wordCount / wordsPerMinute);
+}
+
+// Helper function to transform posts
+function transformPosts(postList: CollectionEntry<"posts">[]) {
+  return postList.map((post) => {
+    const wordCount = countWords(post.body || "");
+    const readTime = calculateReadTime(wordCount);
+    const lastCategory =
+      post.data.categories?.[post.data.categories.length - 1];
+
+    return {
+      title: post.data.title,
+      url: `/posts/${post.id}/`,
+      date: post.data.date,
+      excerpt: post.data.description || post.body?.substring(0, 300) || "",
+      cover: getPostCover(post),
+      category: lastCategory,
+      categoryUrl: lastCategory ? `/categories/${lastCategory}/` : undefined,
+      wordCount,
+      readTime,
+    };
+  });
+}
+
+const transformedStickyPosts = transformPosts(stickyPosts);
+const transformedPosts = transformPosts(posts);
+---
+
+<div class="index wrap">
+  {
+    isFirstPage && transformedStickyPosts.length > 0 && (
+      <section class="sticky-section">
+        <Divider title={t("post.sticky")} />
+        <div class="segments sticky">
+          <PostSegments posts={transformedStickyPosts} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    isFirstPage && categories.length > 0 && (
+      <section class="categories-section">
+        <Divider title={t("category.title")} />
+        <div class="cards">
+          <CategoryCards categories={categories} client:load />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    transformedPosts.length > 0 ? (
+      <section class="posts-section">
+        {isFirstPage && <Divider title={t("post.latest")} />}
+        <div class="segments posts">
+          <PostSegments posts={transformedPosts} />
+        </div>
+      </section>
+    ) : (
+      <section class="no-posts-section">
+        <div class="no-posts">
+          <p>{t("post.noContent")}</p>
+        </div>
+      </section>
+    )
+  }
+</div>
+
+<style>
+  .index.wrap {
+    position: relative;
+    padding: 1.25rem;
+  }
+
+  .sticky-section,
+  .categories-section,
+  .posts-section,
+  .no-posts-section {
+    margin-bottom: 2rem;
+  }
+
+  .sticky-section:last-child,
+  .categories-section:last-child,
+  .posts-section:last-child,
+  .no-posts-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .segments {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .segments.sticky,
+  .segments.posts {
+    margin: 0;
+    width: 100%;
+  }
+
+  .cards {
+    display: flex;
+    margin: 0 auto;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .no-posts {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--grey-5);
+  }
+
+  .no-posts p {
+    font-size: 1.125rem;
+    margin: 0;
+  }
+
+  @media (max-width: 820px) {
+    .index.wrap {
+      padding: 0.625rem;
+    }
+
+    .sticky-section,
+    .categories-section,
+    .posts-section,
+    .no-posts-section {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .index.wrap {
+      padding: 0.5rem;
+    }
+
+    .sticky-section,
+    .categories-section,
+    .posts-section,
+    .no-posts-section {
+      margin-bottom: 1rem;
+    }
+  }
+</style>

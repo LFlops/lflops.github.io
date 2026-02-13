@@ -1,0 +1,21 @@
+<kbd class="kbd">
+  <slot />
+</kbd>
+
+<style is:global>
+  .md .kbd,
+  .md kbd {
+    background-color: var(--grey-1);
+    background-image: linear-gradient(
+      var(--grey-2),
+      var(--grey-0),
+      var(--grey-2)
+    );
+    border: 0.0625rem solid var(--grey-4);
+    border-radius: 0.2rem;
+    box-shadow: 0.1rem 0.1rem 0.2rem rgba(0, 0, 0, 0.1);
+    font-family: inherit;
+    padding: 0.1rem 0.3rem;
+    white-space: nowrap;
+  }
+</style>

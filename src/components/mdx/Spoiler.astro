@@ -1,0 +1,30 @@
+---
+interface Props {
+  title?: string;
+}
+
+const { title = "..." }: Props = Astro.props;
+---
+
+<span class="spoiler" title={title}>
+  <slot />
+</span>
+
+<style is:global>
+  .md .spoiler:not(.bulr) {
+    background-color: var(--text-color);
+    color: var(--text-color);
+    text-shadow: none;
+    transition: color 0.3s;
+    padding: 0 0.1875rem;
+  }
+
+  .md .spoiler:not(.bulr):hover {
+    color: #fff;
+  }
+
+  .md .bulr {
+    text-shadow: rgba(0, 0, 0, 0.7) 0 0 0.625rem;
+    color: transparent;
+  }
+</style>

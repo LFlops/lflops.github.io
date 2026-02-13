@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "home": "首页",
+    "posts": "文章",
+    "categories": "分类",
+    "tags": "标签",
+    "archives": "归档"
+  },
+  "post": {
+    "wordCount": "字数统计",
+    "readingTime": "阅读时长",
+    "minutes": "分钟",
+    "words": "字",
+    "author": "文章作者",
+    "link": "文章链接",
+    "copyright": "版权声明",
+    "sticky": "置顶文章",
+    "latest": "最新文章",
+    "noContent": "暂无文章",
+    "publishedAt": "发布于",
+    "createdAt": "创建于",
+    "previousPost": "上一篇",
+    "nextPost": "下一篇",
+    "license": {
+      "text": "本文采用",
+      "suffix": "许可协议，转载请注明出处",
+      "noreprint": "本文禁止任何形式的转载",
+      "CC-BY-4.0": "署名 4.0 国际 (CC BY 4.0)",
+      "CC-BY-SA-4.0": "署名-相同方式共享 4.0 国际 (CC BY-SA 4.0)",
+      "CC-BY-ND-4.0": "署名-禁止演绎 4.0 国际 (CC BY-ND 4.0)",
+      "CC-BY-NC-4.0": "署名-非商业性使用 4.0 国际 (CC BY-NC 4.0)",
+      "CC-BY-NC-SA-4.0": "署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0)",
+      "CC-BY-NC-ND-4.0": "署名-非商业性使用-禁止演绎 4.0 国际 (CC BY-NC-ND 4.0)"
+    }
+  },
+  "category": {
+    "title": "分类",
+    "subcategories": "个子分类",
+    "posts": "篇文章",
+    "label": "分类",
+    "noContent": "该分类下暂无文章"
+  },
+  "tag": {
+    "title": "标签"
+  },
+  "archive": {
+    "title": "归档",
+    "year": "年",
+    "month": "月",
+    "excellent": "太棒了",
+    "great": "非常好",
+    "good": "很好",
+    "nice": "不错",
+    "ok": "还行",
+    "emh": "嗯..",
+    "keepTrying": "继续努力"
+  },
+  "sidebar": {
+    "toc": "目录",
+    "overview": "站点概览",
+    "author": "作者",
+    "scrollTop": "回到顶部",
+    "scrollBottom": "去到底部",
+    "relatedPosts": "相关文章",
+    "state": {
+      "posts": "文章",
+      "categories": "分类",
+      "tags": "标签"
+    },
+    "related": {
+      "noContent": "暂无相关文章"
+    },
+    "panels": {
+      "contents": "目录",
+      "related": "相关",
+      "overview": "站点"
+    }
+  },
+  "footer": {
+    "poweredBy": "由",
+    "and": "和",
+    "poweredSuffix": "主题强力驱动",
+    "randomPosts": "随机文章"
+  },
+  "pagination": {
+    "prev": "上一页",
+    "next": "下一页"
+  },
+  "button": {
+    "readMore": "阅读更多",
+    "more": "更多"
+  },
+  "tags": {
+    "title": "标签",
+    "allTags": "所有标签",
+    "tagged": "标签"
+  },
+  "common": {
+    "loading": "加载中",
+    "more": "更多",
+    "total": "共",
+    "home": "首页",
+    "in": "在"
+  }
+}

@@ -1,0 +1,123 @@
+---
+interface Props {
+  title?: string;
+  open?: boolean;
+  type?: "primary" | "info" | "success" | "warning" | "danger" | "default";
+}
+
+const {
+  title = "折叠内容",
+  open = false,
+  type = "default",
+}: Props = Astro.props;
+const typeClass = type === "default" ? "" : type;
+---
+
+<details class={`mdx-collapse ${typeClass}`.trim()} open={open}>
+  <summary class="mdx-collapse__summary">{title}</summary>
+  <div class="mdx-collapse__content">
+    <slot />
+  </div>
+</details>
+
+<style is:global>
+  .md .mdx-collapse__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .md .mdx-collapse > summary:first-of-type {
+    list-style-type: none;
+  }
+
+  .md .mdx-collapse__summary {
+    outline: none;
+    cursor: pointer;
+    padding: 0.625rem;
+    background: var(--note-bg, none);
+    border-radius: 0.25rem;
+    transition: all 0.4s ease;
+  }
+
+  .md .mdx-collapse__summary::marker {
+    display: none;
+  }
+
+  .md .mdx-collapse__summary::before {
+    content: "▸";
+    color: var(--grey-4);
+    margin-right: 0.5rem;
+  }
+
+  .md .mdx-collapse__content {
+    padding: 0.625rem;
+  }
+
+  .md .mdx-collapse.primary,
+  .md .mdx-collapse.info,
+  .md .mdx-collapse.success,
+  .md .mdx-collapse.warning,
+  .md .mdx-collapse.danger {
+    margin: 0 0 0.8rem;
+  }
+
+  .md .mdx-collapse.primary .mdx-collapse__summary,
+  .md .mdx-collapse.info .mdx-collapse__summary,
+  .md .mdx-collapse.success .mdx-collapse__summary,
+  .md .mdx-collapse.warning .mdx-collapse__summary,
+  .md .mdx-collapse.danger .mdx-collapse__summary {
+    color: var(--note-text);
+  }
+
+  .md .mdx-collapse.primary .mdx-collapse__summary::before,
+  .md .mdx-collapse.info .mdx-collapse__summary::before,
+  .md .mdx-collapse.success .mdx-collapse__summary::before,
+  .md .mdx-collapse.warning .mdx-collapse__summary::before,
+  .md .mdx-collapse.danger .mdx-collapse__summary::before {
+    color: var(--note-text);
+  }
+
+  .md .mdx-collapse[open] {
+    background: var(--note-bg, none);
+    border-radius: 0.25rem;
+    color: var(--grey-6);
+  }
+
+  .md .mdx-collapse[open] .mdx-collapse__summary {
+    background: var(--note-hover, var(--grey-2));
+    border-radius: 0.25rem;
+  }
+
+  .md .mdx-collapse[open] .mdx-collapse__summary::before {
+    content: "▾";
+    color: var(--primary-color);
+  }
+
+  .md .mdx-collapse[open] .mdx-collapse__content {
+    margin: 0 0 0.8rem;
+  }
+
+  .md .mdx-collapse[open].primary,
+  .md .mdx-collapse[open].info,
+  .md .mdx-collapse[open].success,
+  .md .mdx-collapse[open].warning,
+  .md .mdx-collapse[open].danger {
+    color: var(--note-text);
+  }
+
+  .md .mdx-collapse[open].primary > .mdx-collapse__summary,
+  .md .mdx-collapse[open].info > .mdx-collapse__summary,
+  .md .mdx-collapse[open].success > .mdx-collapse__summary,
+  .md .mdx-collapse[open].warning > .mdx-collapse__summary,
+  .md .mdx-collapse[open].danger > .mdx-collapse__summary {
+    color: #fff;
+    border-radius: 0.25rem 0.25rem 0 0;
+  }
+
+  .md .mdx-collapse[open].primary > .mdx-collapse__summary::before,
+  .md .mdx-collapse[open].info > .mdx-collapse__summary::before,
+  .md .mdx-collapse[open].success > .mdx-collapse__summary::before,
+  .md .mdx-collapse[open].warning > .mdx-collapse__summary::before,
+  .md .mdx-collapse[open].danger > .mdx-collapse__summary::before {
+    color: #fff;
+  }
+</style>

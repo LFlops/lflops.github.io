@@ -1,0 +1,53 @@
+---
+interface Props {
+  type?:
+    | "rainbow"
+    | "red"
+    | "pink"
+    | "orange"
+    | "yellow"
+    | "green"
+    | "aqua"
+    | "blue"
+    | "purple"
+    | "grey";
+}
+
+const { type = "red" }: Props = Astro.props;
+---
+
+<span class={`text ${type}`.trim()}>
+  <slot />
+</span>
+
+<style is:global>
+  .md .text {
+    display: inline;
+  }
+
+  @keyframes rainbow {
+    to {
+      background-position: -2000vw;
+    }
+  }
+
+  .md .text.rainbow {
+    background-image: linear-gradient(
+      to left,
+      orangered,
+      orange,
+      gold,
+      lightgreen,
+      cyan,
+      dodgerblue,
+      mediumpurple,
+      hotpink,
+      orangered
+    );
+    background-size: 110vw;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: rainbow 60s linear infinite;
+  }
+</style>
