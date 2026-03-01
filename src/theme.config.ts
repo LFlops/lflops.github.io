@@ -2,8 +2,11 @@
 import { defineConfig } from "./toolkit/themeConfig";
 
 export default defineConfig({
-  siteName: "ShokaX",
-  locale: "zh-CN", // 网站语言: "zh-CN" | "en"
+  // 基本信息
+  siteName: "lflops.ovh",           // 站点名称
+  locale: "zh-CN",                    // 语言：zh-CN 或 en
+
+  // 导航菜单配置
   nav: [
     {
       href: "/",
@@ -39,110 +42,82 @@ export default defineConfig({
       icon: "i-ri-link",
     },
   ],
+
+  // 品牌信息
   brand: {
-    title: "ShokaX",
-    subtitle: "A modern blog theme",
-    logo: "✨",
+    title: "lflops",                // 品牌标题
+    subtitle: "SRE by day, Anime enthusiast by night.",           // 副标题
+    logo: "✨",                       // Logo 图标
   },
+
+  // 封面配置
   cover: {
-    enableCover: true,
-    enablePreload: true,
-    // 固定封面模式（可选）：
-    // - enableFixedCover: 是否启用固定封面
-    // - fixedCover: 推荐填 "cover-1" ~ "cover-6"（来自 src/components/Images.astro 预设），
-    //              或者填 public 路径/远程 URL（会使用 <img> 兜底渲染）
-    enableFixedCover: false,
-    // fixedCover: "cover-1",
-    // gradient: true, // 渐变模式
-    enableNextGradientCover: false, // 文章导航使用渐变背景
+    enableCover: true,               // 启用封面
+    enablePreload: true,             // 预加载封面
+    enableFixedCover: false,         // 启用固定封面
+    // fixedCover: "cover-1",        // 固定封面图片
+    gradient: true,                  // 渐变模式
   },
+
+  // 侧边栏配置
   sidebar: {
-    author: "Your Name",
-    description: "A brief introduction",
-    social: {
+    author: "LFlops",               // 作者名
+    description: "💻 SRE by day, Anime enthusiast by night. ☕ Java | 🐍 Python | 🦀 Rust | 🐹 Go (Learning) ☁️ Cloud Native & DevOps Advocate.",          // 简介文字
+    social: {                        // 社交媒体链接
       github: {
-        url: "https://github.com/yourname",
+        url: "https://github.com/LFlops",
         icon: "i-ri-github-fill",
       },
       twitter: {
-        url: "https://twitter.com/yourname",
+        url: "https://twitter.com/LFlops77",
         icon: "i-ri-twitter-x-line",
       },
       email: {
-        url: "mailto:your@email.com",
+        url: "mailto:lflops77@gamil.com",
         icon: "i-ri-mail-line",
       },
     },
   },
+
+  // 页脚配置
   footer: {
-    since: 2025,
+    since: 2026,                     // 建站年份
     icon: {
       name: "sakura rotate",
       color: "#ffc0cb",
     },
-    count: true,
-    powered: true,
+    count: true,                     // 显示文章统计
+    powered: true,                   // 显示 "Powered by"
     icp: {
-      enable: true,
-      // icon: '/beian-icon.png',
-      icpnumber: "津ICP备2022001375号",
-      // beian: '网安备案号',
-      // recordcode: 'xxxxx',
+      enable: false,                 // 如需备案则设为 true
+      icpnumber: "你的备案号",        // 备案号
+      // beian: "网安备案号",        // 网安备案号
     },
   },
+
+  // 小工具配置
   widgets: {
-    randomPosts: true,
-    recentComments: true,
+    randomPosts: true,               // 随机文章
+    recentComments: true,            // 最近评论
   },
+
+  // 首页配置
   home: {
     selectedCategories: [{ name: "Tutorial" }, { name: "Frontend" }],
-    pageSize: 5,
+    pageSize: 5,                     // 每页文章数
   },
+
+  // 友链页面配置
   friends: {
     title: "友链",
     description: "卡片式展示，支持站点预览与主题色点缀。",
-    // avatar: "https://example.com/your-avatar.png",
-    // color: "var(--color-pink)",
-    // siteImage: "https://example.com/your-site-preview.png",
     links: [
-      {
-        url: "https://astro.build/",
-        title: "Astro",
-        desc: "全站体验轻快的静态站点框架，适合内容型站点与博客。",
-        author: "Astro Team",
-        avatar: "https://avatars.githubusercontent.com/u/44914786?s=200&v=4",
-        color: "var(--color-orange)",
-        siteImage: "https://astro.build/assets/press/astro-logo-dark.svg",
-      },
-      {
-        url: "https://svelte.dev/",
-        title: "Svelte",
-        desc: "编译时框架，现代与简洁，组件写起来很顺手。",
-        author: "Svelte Team",
-        avatar: "https://avatars.githubusercontent.com/u/23617963?s=200&v=4",
-        color: "var(--color-red)",
-      },
-      {
-        url: "https://vite.dev/",
-        title: "Vite",
-        desc: "快速的前端开发构建工具，HMR 体验很棒。",
-        author: "Vite Team",
-        avatar: "https://avatars.githubusercontent.com/u/65625612?s=200&v=4",
-        color: "var(--color-blue)",
-      },
-      {
-        url: "https://bun.sh/",
-        title: "Bun",
-        desc: "一体化 JavaScript 运行时，速度与工具链兼备。",
-        author: "Bun Team",
-        avatar: "https://avatars.githubusercontent.com/u/108928776?s=200&v=4",
-        color: "var(--color-green)",
-        siteImage: "https://bun.sh/logo.svg",
-      },
     ],
   },
+
+  // 版权配置
   copyright: {
-    license: "CC-BY-NC-SA-4.0",
-    show: true,
+    license: "CC-BY-NC-SA-4.0",      // 默认版权协议
+    show: true,                      // 显示版权声明
   },
 });
