@@ -35,7 +35,7 @@ import Font from "vite-plugin-font";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://preview.astro.kaitaku.xyz",
+  site: "https://blog.lflops.ovh",
   trailingSlash: "always",
   build: {
     format: "directory",
