@@ -56,7 +56,7 @@ export default defineConfig({
     enablePreload: true,             // 预加载封面
     enableFixedCover: false,         // 启用固定封面
     // fixedCover: "cover-1",        // 固定封面图片
-    gradient: true,                  // 渐变模式
+    gradient: false,                  // 渐变模式
   },
 
   // 侧边栏配置
