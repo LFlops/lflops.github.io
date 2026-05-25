@@ -8,19 +8,19 @@ draft: false
 ---
 # 没有 Redis，分布式并发写入怎么搞？
 
-> 一个 OaC 调度引擎的实战案例：时间戳择优 + SavePoint + 反压设计，以及为什么我们选择了 AP 而不是 CP。
+> 一个编排调度引擎的实战案例：时间戳择优 + SavePoint + 反压设计，以及为什么我们选择了 AP 而不是 CP。
 
 ---
 
 ## 1. 问题：多个插件同时上报进度，怎么写不冲突？
 
-先交代背景。OaC（Operations as Code）调度引擎是一个编排执行系统，调度层解析用户编排模板，调用执行层的 Go 和 Python 插件来跑具体任务。最近做了一个叫 Global Context 的功能——插件执行过程中可以上报 KV 格式的进度数据，外部系统通过 API 实时查询"跑到第几步了"。
+先交代背景。这是一个编排执行系统，分两层：调度层拥有数据库，对外暴露 API；执行层接收调度层下发的命令和参数，启动 Go/Python 插件执行具体任务，并将结果和日志通过 gRPC 返回给调度层。最近做了进度查询功能——插件执行中上报 KV 数据到调度层入库，外部系统通过调度层 API 实时查询。
 
 听起来不难。但几个约束条件摆上来，事情就不一样了：
 
 - **分布式执行层**：执行层有两台以上机器，多个 Python 插件可能同时跑，同时写同一个 Key
 - **无 Redis**：维护的组件没有 Redis 实例，分布式锁这条路不通
-- **GaussDB 版本老**：我们的 GaussDB 版本不支持 `ON CONFLICT`（即 upsert 语法），数据库原子写入的捷径也没有
+- **数据库版本老**：我们使用的 PostgreSQL 兼容数据库版本不支持 `ON CONFLICT`（即 upsert 语法），数据库原子写入的捷径也没有
 
 怎么在分布式多写者、无锁、无 upsert 的条件下，保证进度数据最终正确？
 
@@ -39,46 +39,52 @@ flowchart TB
         SCANNER["Scanner<br/>逐行读取 stdout"]
         CHAN["chan (带超时投递)"]
         BG["后台 Goroutine<br/>插件初始化时启动"]
-        GRPC1["gRPC Client"]
+        GRPC_CLI1["gRPC Client"]
     end
 
     subgraph exec2["执行层实例 2"]
         P2["插件进程 (Python)"]
+        SCANNER2["Scanner"]
+        CHAN2["chan"]
+        BG2["后台 Goroutine"]
+        GRPC_CLI2["gRPC Client"]
     end
 
-    subgraph sched1["调度层实例 1"]
-        GRPC_SRV1["gRPC Server"]
+    subgraph sched["调度层"]
+        API["查询 API"]
+        GRPC_SRV["gRPC Server"]
         RESOLVER["时间戳择优逻辑"]
     end
 
-    subgraph sched2["调度层实例 2"]
-        GRPC_SRV2["gRPC Server"]
-        RESOLVER2["时间戳择优逻辑"]
-    end
-
-    DB[("GaussDB<br/>唯一键: execution_id + key<br/>字段: value, timestamp(SDK生成),<br/>nodeInstanceID, nodeInstanceName,<br/>updateTime, createTime")]
+    DB[("PostgreSQL 兼容数据库<br/>唯一键: execution_id + key<br/>冲突裁决字段: timestamp(SDK生成)")]
 
     EXT["外部系统 (CI/CD 流水线<br/>前端轮询 / 机器同步)"]
 
-    P1 -->|"Global Context JSON 行"| SCANNER
+    sched -->|"gRPC: 下发命令与参数"| GRPC_CLI1
+    sched -->|"gRPC: 下发命令与参数"| GRPC_CLI2
+
+    P1 -->|"进度数据 JSON 行"| SCANNER
     SCANNER -->|"解析成功"| CHAN
     CHAN -->|"投递 + timer 超时保护"| BG
-    BG -->|"gRPC 调用<br/>(k,v,ts,nodeID,nodeName)"| GRPC_SRV1
-    GRPC_SRV1 --> RESOLVER
+    BG -->|"gRPC 上报<br/>(k,v,ts,插件标识)"| GRPC_SRV
+
+    P2 -->|"进度数据"| SCANNER2
+    SCANNER2 -->|"解析"| CHAN2
+    CHAN2 -->|"投递"| BG2
+    BG2 -->|"gRPC 上报"| GRPC_SRV
+
+    GRPC_SRV --> RESOLVER
     RESOLVER -->|"新 ts > 旧 ts: 更新<br/>新 ts ≤ 旧 ts: 丢弃"| DB
 
-    P2 -->|gRPC| GRPC_SRV2
-    GRPC_SRV2 --> RESOLVER2 --> DB
-
-    EXT -->|"GET /progress 需求: 10 TPS"| exec1
-    exec1 -->|"查询"| DB
+    EXT -->|"GET /progress 需求: 10 TPS"| API
+    API -->|"查询"| DB
 ```
 
 几个值得关注的点：
 
-1. **Python 插件不是本地脚本**——调度层解析用户模板确定插件类型后，从内部平台动态拉取插件脚本，再由执行层通过 `shell python xx.py` 启动子进程执行。
+1. **调度层是大脑**——拥有数据库，对外暴露查询 API。调度层通过 gRPC 向执行层下发命令和参数，执行层接收后启动插件。
 
-2. **Go 和 Python 之间通过 stdout/stdin 通信**——Python 侧 `print(json)` 输出，Go 侧 Scanner 逐行解析。Global Context 数据夹杂在 stdout 流中，通过约定的 JSON 格式区分。
+2. **执行层负责上报**——Python 插件通过 stdout 输出进度数据，Go 侧 Scanner 解析后通过 chan 投递给后台 goroutine，goroutine 再通过 gRPC 将数据上报回调度层。执行层不直接访问数据库。
 
 3. **chan + timer 反压是关键设计**——下面展开讲。
 
@@ -95,7 +101,7 @@ flowchart TB
 行得通，但全局串行化了所有插件的写入。插件写入频繁时，行锁变成瓶颈——本来是一个插件 5ms 的写入，排队等锁可能等到几百 ms。在不需要强一致的场景下，这个代价不值。
 
 **方案 C：`ON CONFLICT` upsert。**
-最简洁的解法——一条 SQL 搞定"存在则更新，不存在则插入"。但 GaussDB 版本太老，不支持。
+最简洁的解法——一条 SQL 搞定"存在则更新，不存在则插入"。但我们的数据库版本太老，不支持。
 
 **限制不是坏事。** 这三个方案被排除后，问题的边界变得清晰：我们要一个无锁、依赖普通 SQL、容忍短暂不一致的写入方案。在分布式系统里，边界清晰的受限问题比"什么都能用"的开放问题更好解。
 
@@ -109,7 +115,7 @@ flowchart TB
 
 为什么？如果由 DB 打时间（`NOW()`），面对两个并发写入——先到达 DB 的被后到达的覆盖，但"先到达"不等于"先发生"。插件 A 比插件 B 早 1ms 调用 write，但如果 A 的网络抖动 100ms，B 的请求先到 DB——B 的写入会被 A 覆盖，而 B 才是"更晚发生"的那个。
 
-SDK 打时间能更准确地表达"业务发生的先后"。配合 NTP 时钟同步（现网 agent 纳管，偏差在 ms 级别），时钟偏差远小于写入间隔。
+SDK 打时间能更准确地表达"业务发生的先后"。配合 NTP 时钟同步（现网通过运维平台统一纳管，偏差在 ms 级别），时钟偏差远小于写入间隔。
 
 数据库表设计也体现了时间语义的分层：
 
@@ -118,7 +124,7 @@ SDK 打时间能更准确地表达"业务发生的先后"。配合 NTP 时钟同
 | `timestamp` | 插件 SDK | 冲突裁决：新 ts 覆盖旧 ts |
 | `updateTime` | SQL 中的值 | 审计：记录真实入库时间 |
 | `createTime` | SQL 中的值 | 审计：记录首次创建时间 |
-| `nodeInstanceID` / `nodeInstanceName` | 插件信息 | 记录谁最后更新 |
+| 插件实例标识 | 插件信息 | 记录最后更新者 |
 
 ### 4.2 chan + timer：stdout 流不能被一个人堵死
 
@@ -132,7 +138,7 @@ Python 插件通过 `print(json)` 向 stdout 写 Global Context 数据。Go 侧 
 
 ### 4.3 SavePoint 事务：INSERT 失败？那就 UPDATE
 
-到了调度层，gRPC 收到数据（execution_id, key, value, timestamp, nodeInstanceID, nodeInstanceName），核心是在事务中完成"检查 → 插入或更新"。表结构有一个唯一键约束 `(execution_id, key)`，这是并发安全的基础。
+到了调度层，gRPC 收到插件上报的数据（execution_id, key, value, timestamp, 以及插件实例标识），核心是在事务中完成"检查 → 插入或更新"。表结构有一个唯一键约束 `(execution_id, key)`，这是并发安全的基础。
 
 事务流程：
 
