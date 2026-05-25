@@ -3,7 +3,7 @@ title: Docker 容器升级后数据目录权限踩坑全记录
 date: 2026-03-02
 description: 记录 Bangumi-syncer 的 DockerFile 采取 appuser 导致的 root 权限问题。
 tags: [docker, nas]
-categories: [python, Docker]
+categories: [Docker]
 draft: false
 ---
 # Docker 容器升级后数据目录权限踩坑全记录
