@@ -179,6 +179,17 @@ import SearchPage from "@/components/search/SearchPage.svelte";
       });
     </script>
     <script>
+      import { initializeMermaid } from "@/toolkit/initMermaid";
+
+      document.addEventListener("pagereveal", () => {
+        initializeMermaid();
+      });
+
+      document.addEventListener("DOMContentLoaded", () => {
+        initializeMermaid();
+      });
+    </script>
+    <script>
       import { initializeCodeBlock } from "@/toolkit/initCodeBlock";
 
       document.addEventListener("pagereveal", () => {
@@ -201,5 +212,17 @@ import SearchPage from "@/components/search/SearchPage.svelte";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+  }
+
+  .mermaid-diagram {
+    display: flex;
+    justify-content: center;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .mermaid-diagram svg {
+    max-width: 100%;
+    height: auto;
   }
 </style>
