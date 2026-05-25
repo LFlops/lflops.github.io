@@ -178,16 +178,52 @@ import SearchPage from "@/components/search/SearchPage.svelte";
         document.body.style.fontFamily = css.family as string;
       });
     </script>
-    <script>
-      import { initializeMermaid } from "@/toolkit/initMermaid";
+    <script is:inline>
+      async function initMermaid() {
+        const blocks = document.querySelectorAll(
+          'pre.astro-code[data-language="mermaid"]'
+        );
+        if (!blocks.length) return;
 
-      document.addEventListener("pagereveal", () => {
-        initializeMermaid();
-      });
+        const pairs = [...blocks].map((block) => {
+          const code = block.textContent || "";
+          const placeholder = document.createElement("div");
+          placeholder.className = "mermaid-diagram";
+          block.replaceWith(placeholder);
+          return { placeholder, code };
+        });
 
-      document.addEventListener("DOMContentLoaded", () => {
-        initializeMermaid();
-      });
+        try {
+          const { default: mermaid } = await import(
+            "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
+          );
+          const theme =
+            document.documentElement.dataset.theme === "dark"
+              ? "dark"
+              : "default";
+          mermaid.initialize({
+            startOnLoad: false,
+            securityLevel: "loose",
+            theme,
+          });
+
+          for (const [i, { placeholder, code }] of pairs.entries()) {
+            try {
+              const { svg } = await mermaid.render("mermaid-" + i, code);
+              placeholder.innerHTML = svg;
+            } catch (e) {
+              placeholder.textContent = "Diagram rendering failed";
+            }
+          }
+        } catch (e) {
+          for (const { placeholder } of pairs) {
+            placeholder.textContent = "Diagram rendering failed";
+          }
+        }
+      }
+
+      document.addEventListener("pagereveal", initMermaid);
+      document.addEventListener("DOMContentLoaded", initMermaid);
     </script>
     <script>
       import { initializeCodeBlock } from "@/toolkit/initCodeBlock";
