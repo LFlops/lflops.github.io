@@ -42,6 +42,9 @@ interface Props {
   pageTitle?: string;
   postMeta?: PostMeta;
   indexPage?: boolean;
+  description?: string;
+  ogImage?: string;
+  ogType?: string;
 }
 
 const {
@@ -52,6 +55,9 @@ const {
   pageTitle = "",
   postMeta,
   indexPage = false,
+  description,
+  ogImage,
+  ogType,
 } = Astro.props;
 
 const navLinks = themeConfig.nav;
@@ -61,6 +67,11 @@ const brandConfig = themeConfig.brand || {};
 const coverConfig = themeConfig.cover || {};
 const footerConfig = themeConfig.footer || {};
 const widgetsConfig = themeConfig.widgets || {};
+
+const pageTitleWithSuffix = pageTitle
+  ? `${pageTitle} | ${siteName}`
+  : siteName;
+const metaDescription = description || sidebarConfig?.description || "";
 
 // fixedCover：通过 Images.astro 统一解析（静态导入走 <Image />，字符串走 <img> 兜底）
 // 兼容旧配置：如果用户只配置了 fixedCover 但未配置 enableFixedCover，则默认视为启用。
@@ -98,12 +109,31 @@ import SearchPage from "@/components/search/SearchPage.svelte";
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-
-    <slot name="head" />
-
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 
-    <title>{pageTitle}</title>
+    <title>{pageTitleWithSuffix}</title>
+    <meta name="description" content={metaDescription} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={pageTitleWithSuffix} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:type" content={ogType || "website"} />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitleWithSuffix} />
+    <meta name="twitter:description" content={metaDescription} />
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={Astro.url} />
+
+    <!-- RSS Discovery -->
+    <link rel="alternate" type="application/rss+xml" href="/rss.xml" />
+
+    <slot name="head" />
   </head>
   <body>
     <NavBar

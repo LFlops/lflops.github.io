@@ -33,3 +33,5 @@ hyacine.code-workspace
 generated/
 
 .docs/
+# pi coding-agent local data
+.pi/

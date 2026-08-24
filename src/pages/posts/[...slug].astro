@@ -126,7 +126,7 @@ const author = siteConfig.author || "Author";
 const siteName = themeConfig.siteName || "Site";
 
 // Build permalink
-const permalink = `${Astro.site?.toString()}posts/${post.id}`;
+const permalink = new URL(`/posts/${post.id}/`, Astro.site!).toString();
 
 // Build postMeta for Brand component
 const postMeta = {
@@ -134,6 +134,14 @@ const postMeta = {
   wordCount,
   readTime,
 };
+
+// Build SEO metadata
+const seoDescription = post.data.description
+  || post.body?.slice(0, 160).replace(/\s+/g, " ")
+  || "";
+const ogImage = post.data.cover
+  ? new URL(post.data.cover.src, Astro.site!).toString()
+  : undefined;
 ---
 
 <Layout
@@ -143,15 +151,10 @@ const postMeta = {
   navigation={navigation}
   pageTitle={post.data.title}
   postMeta={postMeta}
+  description={seoDescription}
+  ogImage={ogImage}
+  ogType="article"
 >
-  <Fragment slot="head">
-    <meta
-      name="description"
-      content={post.data.description ||
-        post.body?.slice(0, 150).replace(/\s+/g, " ")}
-    />
-  </Fragment>
-
   <Fragment>
     <div class="article wrap">
       <Breadcrumb categories={post.data.categories} />

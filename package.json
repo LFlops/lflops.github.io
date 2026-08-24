@@ -18,7 +18,7 @@
     "@astrojs/check": "^0.9.6",
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/rss": "^4.0.15",
-    "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/sitemap": "^3.7.3",
     "@astrojs/svelte": "^7.2.5",
     "@astrojs/ts-plugin": "^1.10.6",
     "@ctrl/tinycolor": "^4.2.0",

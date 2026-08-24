@@ -4,6 +4,7 @@ import IndexContent from "@/components/IndexContent.astro";
 import Pagination from "@/components/Pagination.astro";
 import { getCollection } from "astro:content";
 import themeConfig from "@/theme.config";
+import { covers } from "@/components/Images.astro";
 import type { CollectionEntry } from "astro:content";
 import type { GetStaticPaths } from "astro";
 
@@ -49,17 +50,21 @@ const paginationNavigation = {
       ? `/page/${page.currentPage + 1}/`
       : undefined,
 };
+
+// Build SEO metadata
+const seoDescription = themeConfig.sidebar?.description?.slice(0, 160) || "";
+const ogImage = covers.length > 0
+  ? new URL(covers[0].src, Astro.site).toString()
+  : undefined;
 ---
 
 <Layout
   pageTitle={pageTitle}
   indexPage={true}
   navigation={paginationNavigation}
+  description={seoDescription}
+  ogImage={ogImage}
 >
-  <Fragment slot="head">
-    <meta name="description" content={themeConfig.sidebar?.description} />
-  </Fragment>
-
   <IndexContent
     posts={page.data}
     stickyPosts={[]}
