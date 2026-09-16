@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "bunx --bun astro dev",
     "build:site": "bunx --bun astro build",
+    "build:sitemap": "bun run scripts/flatten-sitemap.ts",
     "build:index": "bunx --bun pagefind --site ./dist",
-    "build": "bun run build:site && bun run build:index",
+    "build": "bun run build:site && bun run build:sitemap && bun run build:index",
     "preview": "bunx --bun astro preview",
     "astro": "bunx --bun astro",
     "check": "bunx --bun astro check --root .",
