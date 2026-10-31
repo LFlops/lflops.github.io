@@ -5,7 +5,7 @@
   let scrollPercent = $state(0);
   let hasComments = $state(false);
   let isMobile = $state(false);
-  let isVisible = $state(true);
+  let isVisible = $state(false);
 
   const percentLabel = $derived(`${Math.round(scrollPercent)}%`);
 
@@ -67,13 +67,15 @@
       const isScrollingUp = currentScrollY < lastScrollY;
 
       if (currentScrollY <= 8) {
-        isVisible = true;
-      } else if (isScrollingUp) {
-        isVisible = true;
-      } else {
         isVisible = false;
+        lastScrollY = currentScrollY;
+        if (idleTimer) {
+          clearTimeout(idleTimer);
+        }
+        return;
       }
 
+      isVisible = isScrollingUp;
       lastScrollY = currentScrollY;
 
       if (idleTimer) {
@@ -88,6 +90,8 @@
     window.addEventListener("scroll", updateScrollPercent, { passive: true });
     window.addEventListener("scroll", updateVisibility, { passive: true });
     window.addEventListener("resize", updateIsMobile, { passive: true });
+
+    updateVisibility();
 
     let observer: MutationObserver | null = null;
 

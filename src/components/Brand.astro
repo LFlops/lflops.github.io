@@ -47,7 +47,7 @@ function formatWordCount(count: number): string {
 
 <div
   id="brand"
-  class="color-[var(--grey-3)] w-full px-20 pt-12 text-center min-h-40 flex flex-col items-center justify-center"
+  class="color-[var(--header-text-color)] w-full px-20 pt-12 text-center min-h-40 flex flex-col items-center justify-center"
 >
   <div class="pjax flex flex-col w-full items-center justify-center">
     {
@@ -76,7 +76,7 @@ function formatWordCount(count: number): string {
 
     {
       shouldShowPostMeta && postMeta && (
-        <div class="meta text-base mt-2.5 opacity-80 flex flex-wrap gap-3 items-center justify-center">
+        <div class="meta text-base mt-2.5 flex flex-wrap gap-3 items-center justify-center">
           <span
             class="item flex gap-1 items-center"
             title={`${t("post.publishedAt")} ${formatDate(postMeta.date)}`}
@@ -143,6 +143,8 @@ function formatWordCount(count: number): string {
     transition: all 0.3s ease;
     position: fixed;
     height: 50vh;
+    color: var(--header-text-color);
+    text-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.55);
   }
 
   #brand.affix {
