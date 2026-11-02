@@ -46,7 +46,7 @@ export default defineConfig({
   // 品牌信息
   brand: {
     title: "lflops",                // 品牌标题
-    subtitle: "SRE by day, Anime enthusiast by night.",           // 副标题
+    subtitle: "Agent Developer by day, Anime enthusiast by night.",           // 副标题
     logo: "✨",                       // Logo 图标
   },
 
@@ -62,7 +62,7 @@ export default defineConfig({
   // 侧边栏配置
   sidebar: {
     author: "LFlops",               // 作者名
-    description: "💻 SRE by day, Anime enthusiast by night. ☕ Java | 🐍 Python | 🦀 Rust | 🐹 Go (Learning) ☁️ Cloud Native & DevOps Advocate.",          // 简介文字
+    description: "🤖 Agent Developer by day, Anime enthusiast by night. ☕ Java | 🐍 Python | 🦀 Rust | 🐹 Go",          // 简介文字
     social: {                        // 社交媒体链接
       github: {
         url: "https://github.com/LFlops",
