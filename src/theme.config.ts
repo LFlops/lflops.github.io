@@ -73,7 +73,7 @@ export default defineConfig({
         icon: "i-ri-twitter-x-line",
       },
       email: {
-        url: "mailto:lflops77@gamil.com",
+        url: "mailto:lflops77@gmail.com",
         icon: "i-ri-mail-line",
       },
     },
